@@ -1,0 +1,611 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Dashboard - LearnSphere</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    /* Global Styles */
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(135deg, #e0c3fc 0%, #fbc2eb 100%);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start; /* Align items to the top */
+      min-height: 100vh;
+      margin: 0;
+      padding: 0; /* Remove body padding, the main-container handles it */
+      box-sizing: border-box;
+      overflow-x: hidden; /* Prevent horizontal scroll */
+    }
+
+    /* Main Container for the whole app */
+    .main-container {
+      background-color: #ffffff;
+      padding: 2.5rem; /* Padding for the white card effect */
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 1200px; /* Adjust as needed for dashboard width */
+      min-height: 80vh; /* Minimum height for the white card */
+      display: flex; /* Use flexbox for sidebar and main content */
+      margin-top: 5vh; /* Push it down a bit from the top */
+      margin-bottom: 5vh;
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+      width: 250px;
+      padding-right: 2rem;
+      border-right: 1px solid #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0; /* Prevent sidebar from shrinking */
+    }
+
+    .sidebar .logo {
+      display: flex;
+      align-items: center;
+      margin-bottom: 3rem;
+    }
+
+    .sidebar .logo img {
+      height: 40px; /* Adjust logo size */
+      margin-right: 10px;
+    }
+
+    .sidebar .logo span {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar-menu li {
+      margin-bottom: 0.5rem;
+    }
+
+    .sidebar-menu a {
+      display: flex;
+      align-items: center;
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      text-decoration: none;
+      color: #777;
+      font-weight: 500;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    .sidebar-menu a i {
+      margin-right: 10px;
+      font-size: 1.2rem;
+    }
+
+    .sidebar-menu a:hover,
+    .sidebar-menu a.active {
+      background-color: #6a5af9;
+      color: white;
+    }
+    
+    .sidebar-menu a.active {
+        box-shadow: 0 4px 10px rgba(106, 90, 249, 0.3);
+    }
+
+    /* Main Content Area */
+    .dashboard-main-content {
+      flex-grow: 1;
+      padding-left: 2rem;
+    }
+
+    .top-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .top-header .user-info {
+      display: flex;
+      align-items: center;
+      color: #555;
+      font-weight: 500;
+    }
+
+    .top-header .user-info i {
+      margin-right: 8px;
+      font-size: 1.2rem;
+      color: #6a5af9;
+    }
+
+    #logout-button {
+      padding: 0.6rem 1rem;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    #logout-button:hover {
+      background-color: #c82333;
+    }
+
+    /* Common Dashboard Sections */
+    .dashboard-section {
+      display: none; /* Hidden by default, JS will show */
+      margin-top: 1.5rem;
+    }
+
+    .dashboard-section h2 {
+      font-size: 1.8rem;
+      color: #333;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Cards */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background-color: #f9f9f9;
+      border-radius: 15px;
+      padding: 1.5rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start; /* Changed from space-between */
+    }
+    
+    .card-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .card-header .icon {
+        background-color: #e6e6fa; /* Light purple */
+        color: #6a5af9;
+        border-radius: 8px;
+        padding: 0.6rem;
+        margin-right: 10px;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .card h3 {
+      font-size: 1.1rem;
+      color: #333;
+      margin-top: 0;
+      margin-bottom: 1rem; /* Added margin */
+    }
+    .card p {
+        font-size: 0.9rem;
+        color: #777;
+        margin-bottom: 0.5rem;
+    }
+    .card .metadata {
+        font-size: 0.8rem;
+        color: #999;
+    }
+    
+    /* --- NEW --- Empty State Styling */
+    .empty-state {
+      padding: 2rem 1rem;
+      color: #999;
+      font-style: italic;
+      text-align: center;
+      font-size: 0.9rem;
+      width: 100%;
+    }
+    .recent-list .empty-state {
+        list-style-type: none;
+    }
+
+    /* Start a New Chat Button (Student specific) */
+    .start-chat-btn {
+      background: linear-gradient(90deg, #6a5af9, #a37bf2);
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.1rem;
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 2.5rem;
+      box-shadow: 0 8px 20px rgba(106, 90, 249, 0.4);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .start-chat-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(106, 90, 249, 0.5);
+    }
+
+    .start-chat-btn i {
+      margin-right: 10px;
+      font-size: 1.3rem;
+    }
+
+    /* Recent Conversations/Topics */
+    .recent-list {
+      list-style: none;
+      padding: 0;
+    }
+    .recent-list li {
+        display: flex;
+        align-items: center;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid #eee;
+    }
+    .recent-list li:last-child {
+        border-bottom: none;
+    }
+    .recent-list .status-icon {
+        font-size: 1.1rem;
+        margin-right: 10px;
+        color: #5cb85c; /* Green for checkmark */
+    }
+    .recent-list .chat-title {
+        flex-grow: 1;
+        color: #333;
+        font-weight: 500;
+    }
+    .recent-list .chat-time {
+        font-size: 0.85rem;
+        color: #999;
+    }
+
+    /* Teacher Dashboard Specific */
+    .review-item {
+        display: flex;
+        align-items: flex-start;
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    }
+    .review-item img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 15px;
+        object-fit: cover;
+    }
+    .review-item-content {
+        flex-grow: 1;
+        text-align: left;
+    }
+    .review-item-content .student-name {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 5px;
+    }
+    .review-item-content .doubt-text {
+        font-size: 0.9rem;
+        color: #555;
+        line-height: 1.4;
+    }
+    .review-item-content .doubt-text .icon-pdf {
+        color: #d9534f; /* Red for PDF */
+        margin-right: 5px;
+    }
+
+    .progress-overview .chart-placeholder {
+        background-color: #e9e9e9;
+        border-radius: 10px;
+        height: 150px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #888;
+        font-style: italic;
+        margin-bottom: 1.5rem;
+    }
+    .misunderstood-topics .bar-chart {
+        display: flex;
+        align-items: flex-end;
+        height: 120px;
+        gap: 10px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+    }
+    .misunderstood-topics .bar {
+        width: 30px;
+        background-color: #6a5af9;
+        border-radius: 5px 5px 0 0;
+        transition: height 0.3s ease;
+        position: relative;
+    }
+    .misunderstood-topics .bar span {
+        position: absolute;
+        bottom: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.75rem;
+        color: #777;
+        white-space: nowrap;
+    }
+
+    /* Utility classes */
+    .flex-column {
+        display: flex;
+        flex-direction: column;
+    }
+    .flex-row {
+        display: flex;
+        align-items: center;
+    }
+    .mb-0 { margin-bottom: 0; }
+    .mb-1 { margin-bottom: 0.5rem; }
+    .mb-2 { margin-bottom: 1rem; }
+    .mb-3 { margin-bottom: 1.5rem; }
+    .mr-2 { margin-right: 1rem; }
+  </style>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+  <div class="main-container">
+    <aside class="sidebar">
+      <div class="logo">
+        <img src="https://placehold.co/40x40/6a5af9/FFFFFF/png?text=LS" alt="LearnSphere Logo"> 
+        <span>LearnSphere</span>
+      </div>
+      <ul class="sidebar-menu">
+        <li><a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li id="recent-chats-menu" style="display: none;"><a href="#"><i class="fas fa-comments"></i> Recent Chats</a></li>
+        <li id="review-queue-menu" style="display: none;"><a href="#"><i class="fas fa-clipboard-list"></i> Review Queue</a></li>
+        <li id="quiz-me-menu" style="display: none;"><a href="#"><i class="fas fa-question-circle"></i> Quiz Me</a></li>
+        <li id="student-analytics-menu" style="display: none;"><a href="#"><i class="fas fa-chart-bar"></i> Student Analytics</a></li>
+        <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+      </ul>
+    </aside>
+
+    <div class="dashboard-main-content">
+      <header class="top-header">
+        <div class="user-info">
+          <i class="fas fa-user-circle"></i>
+          <span id="welcome-message">Hi, User!</span>
+        </div>
+        <button id="logout-button">Logout</button>
+      </header>
+
+      <!-- 
+        STUDENT DASHBOARD SECTION
+        Content is now populated by JavaScript
+      -->
+      <div id="student-dashboard-section" class="dashboard-section">
+        <a href="#" class="start-chat-btn"><i class="fas fa-comment-dots"></i> Start a New Chat</a>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>My Library</h3>
+                <!-- Content will be injected here by JS -->
+                <div class="flex-column" id="student-library-list">
+                    <!-- <p class="empty-state">Loading library...</p> -->
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Recent Conversations</h3>
+                <!-- Content will be injected here by JS -->
+                <ul class="recent-list" id="student-recent-chats">
+                    <!-- <li class="empty-state">Loading chats...</li> -->
+                </ul>
+            </div>
+        </div>
+      </div>
+
+      <!-- 
+        TEACHER DASHBOARD SECTION
+        Content is now populated by JavaScript
+      -->
+      <div id="teacher-dashboard-section" class="dashboard-section">
+        <h2>Teacher Dashboard</h2>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>Pending Reviews</h3>
+                <!-- Content will be injected here by JS -->
+                <div id="teacher-pending-reviews">
+                   <!-- <p class="empty-state">Loading reviews...</p> -->
+                </div>
+            </div>
+
+            <div class="card progress-overview">
+                <h3>Student Progress Overview</h3>
+                 <div class="chart-placeholder">
+                    <span>[Chart Placeholder]</span>
+                 </div>
+                <h3>Recent Activity</h3>
+                <!-- Content will be injected here by JS -->
+                <ul class="recent-list" id="teacher-recent-activity">
+                    <!-- <li class="empty-state">Loading activity...</li> -->
+                </ul>
+            </div>
+            
+             <div class="card misunderstood-topics">
+                <h3>Most Frequently Misunderstood Topics</h3>
+                <!-- Content will be injected here by JS -->
+                <div id="teacher-misunderstood-topics">
+                    <p class="empty-state">No topic data yet.</p>
+                </div>
+            </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // --- Helper function to render student library ---
+    function renderStudentLibrary(items) {
+      const container = document.getElementById("student-library-list");
+      if (items.length === 0) {
+        container.innerHTML = '<p class="empty-state">Your library is empty. Upload some documents!</p>';
+        return;
+      }
+      
+      let html = items.map(item => `
+        <div class="flex-row mb-1">
+            <div class="icon"><i class="far ${item.type === 'pdf' ? 'fa-file-pdf' : 'fa-file-image'}"></i></div>
+            <div>
+                <p class="mb-0">${item.title}</p>
+                <span class="metadata">Uploaded ${new Date(item.uploadedAt).toLocaleDateString()}</span>
+            </div>
+        </div>
+      `).join('');
+      container.innerHTML = html;
+    }
+
+    // --- Helper function to render student chats ---
+    function renderStudentChats(chats) {
+      const container = document.getElementById("student-recent-chats");
+      if (chats.length === 0) {
+        container.innerHTML = '<li class="empty-state">No recent conversations. Start a new chat!</li>';
+        return;
+      }
+
+      let html = chats.map(chat => `
+        <li>
+            <i class="fas fa-check-circle status-icon"></i>
+            <span class="chat-title">${chat.title}</span>
+            <span class="chat-time">${chat.time}</span>
+        </li>
+      `).join('');
+      container.innerHTML = html;
+    }
+    
+    // --- Helper function to render pending reviews (Teacher) ---
+    function renderPendingReviews(reviews) {
+        const container = document.getElementById("teacher-pending-reviews");
+        if (reviews.length === 0) {
+            container.innerHTML = '<p class="empty-state">No pending reviews. Great job!</p>';
+            return;
+        }
+
+        let html = reviews.map(review => `
+            <div class="review-item">
+                <img src="${review.studentImage || 'https://placehold.co/40x40/999/FFFFFF/png?text=S'}" alt="Student Profile">
+                <div class="review-item-content">
+                    <p class="student-name">Student: ${review.studentName}</p>
+                    <p class="doubt-text">${review.doubt}</p>
+                </div>
+            </div>
+        `).join('');
+        container.innerHTML = html;
+    }
+    
+    // --- Main script on page load ---
+    document.addEventListener("DOMContentLoaded", () => {
+      const userString = localStorage.getItem("user");
+      const token = localStorage.getItem("token");
+      
+      if (!userString || !token) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      const user = JSON.parse(userString);
+      
+      const welcomeMsg = document.getElementById("welcome-message");
+      welcomeMsg.textContent = `Hi, ${user.username}!`;
+
+      // Common fetch headers
+      const headers = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      };
+
+      // References to sections and menus
+      const studentDashboardSection = document.getElementById("student-dashboard-section");
+      const teacherDashboardSection = document.getElementById("teacher-dashboard-section");
+      const recentChatsMenu = document.getElementById("recent-chats-menu");
+      const reviewQueueMenu = document.getElementById("review-queue-menu");
+      const quizMeMenu = document.getElementById("quiz-me-menu");
+      const studentAnalyticsMenu = document.getElementById("student-analytics-menu");
+
+      if (user.role === 'teacher') {
+        // --- TEACHER DASHBOARD LOGIC ---
+        teacherDashboardSection.style.display = "block";
+        reviewQueueMenu.style.display = "block";
+        studentAnalyticsMenu.style.display = "block";
+        recentChatsMenu.style.display = "none";
+        quizMeMenu.style.display = "none";
+
+        // Fetch and render pending reviews
+        fetch('/api/teacher/reviews/pending', { headers })
+          .then(res => res.json())
+          .then(data => {
+            renderPendingReviews(data);
+          })
+          .catch(err => {
+            console.error("Error fetching reviews:", err);
+            document.getElementById("teacher-pending-reviews").innerHTML = '<p class="empty-state" style="color: red;">Could not load reviews.</p>';
+          });
+
+        // Set empty states for other teacher cards
+        document.getElementById("teacher-recent-activity").innerHTML = '<li class="empty-state">No recent student activity.</li>';
+        document.getElementById("teacher-misunderstood-topics").innerHTML = '<p class="empty-state">No topic data yet.</p>';
+
+
+      } else if (user.role === 'student') {
+        // --- STUDENT DASHBOARD LOGIC ---
+        studentDashboardSection.style.display = "block";
+        recentChatsMenu.style.display = "block";
+        quizMeMenu.style.display = "block";
+        reviewQueueMenu.style.display = "none";
+        studentAnalyticsMenu.style.display = "none";
+        
+        // Fetch and render student library
+        fetch('/api/student/library', { headers })
+          .then(res => res.json())
+          .then(data => {
+            renderStudentLibrary(data);
+          })
+          .catch(err => {
+             console.error("Error fetching library:", err);
+             document.getElementById("student-library-list").innerHTML = '<p class="empty-state" style="color: red;">Could not load library.</p>';
+          });
+
+        // Fetch and render student chats
+        fetch('/api/student/chats', { headers })
+          .then(res => res.json())
+          .then(data => {
+            renderStudentChats(data);
+          })
+          .catch(err => {
+             console.error("Error fetching chats:", err);
+             document.getElementById("student-recent-chats").innerHTML = '<li class="empty-state" style="color: red;">Could not load chats.</li>';
+          });
+      }
+
+      // --- Logout Button ---
+      const logoutButton = document.getElementById("logout-button");
+      logoutButton.addEventListener("click", () => {
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        window.location.href = "login.html";
+      });
+    });
+  </script>
+</body>
+</html>
