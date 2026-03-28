@@ -1,0 +1,8 @@
+terminal commands to run learnsphere
+
+chroma run --host localhost --port 8000
+node server.js
+python -m uvicorn main:app --reload --port 8001
+
+npm run dev
+

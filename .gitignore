@@ -1,0 +1,29 @@
+# Node
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+
+# Environment variables
+.env
+
+# Uploads
+uploads/
+
+# Vector DB
+chroma/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build folders
+dist/
+build/
+
+# VS Code
+.vscode/
