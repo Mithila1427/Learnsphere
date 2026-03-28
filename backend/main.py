@@ -251,3 +251,13 @@ async def upload_file(file: UploadFile = File(...)):
             "message": "Internal error while processing file",
             "error": str(e)
         }
+        # -----------------------------
+# RUN SERVER (RENDER FIX)
+# -----------------------------
+import os
+
+port = int(os.environ.get("PORT", 10000))
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=port)
